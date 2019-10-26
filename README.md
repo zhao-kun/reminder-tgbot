@@ -12,7 +12,7 @@ Run `make` to build binary target
 
 ## Configuration
 
-Configuration file was write by json, named with `config.json`, which must be put in same directory with binary target file. 
+Configuration file was written by json, named with `config.json`, which must be put in same directory with binary target file. 
 
 ```
 {
