@@ -20,6 +20,8 @@ import (
 const (
 	noneOpsCommand string = ""
 	checkInCommand string = "/checkin"
+	//
+	contextTodayIsFestivalKey = "today_is_festival_key"
 )
 
 type (
@@ -84,15 +86,6 @@ func processCheckIn(r repo.Repo, msg model.Message) model.ReplyMessage {
 		}
 	}
 	return resp
-}
-
-// ClientRepoWrap wrap a func with config parameter
-func ClientRepoWrap(c telegram.Client, r repo.Repo,
-	f func(telegram.Client, repo.Repo, rest.ResponseWriter, *rest.Request)) func(rest.ResponseWriter, *rest.Request) {
-	return func(w rest.ResponseWriter, req *rest.Request) {
-		f(c, r, w, req)
-	}
-
 }
 
 // TelegramServerHandle service checkin command sent from tgchannel
@@ -188,7 +181,7 @@ func getChineseFestivalCalendar(c telegram.Client, r repo.Repo, context task.Con
 		return true
 	}
 
-	context["today_is_fesetival"] = 0
+	context[contextTodayIsFestivalKey] = 0
 	config := r.Cfg()
 	today := ""
 	url := fmt.Sprintf("%s?date=%s", config.CNCalendarServiceEndpoint, today)
@@ -215,9 +208,11 @@ func reminder(c telegram.Client, r repo.Repo, context task.Context) bool {
 			continue
 		}
 
-		if !isRemindTime(time.Now(),
-			r.Cfg().Remind.TimeRange.Begin,
-			r.Cfg().Remind.TimeRange.End) {
+		if !isWorkDay(context) ||
+			!isRemindTime(time.Now(),
+				r.Cfg().Remind.TimeRange.Begin,
+				r.Cfg().Remind.TimeRange.End) {
+			// no work day and no reminder time range
 			continue
 		}
 
@@ -263,6 +258,17 @@ func StartAllBotTask(c telegram.Client, r repo.Repo) error {
 	}
 	registry.StartAllTask()
 	return nil
+}
+
+func isWorkDay(context task.Context) bool {
+	value := context[contextTodayIsFestivalKey]
+	workday, ok := value.(int)
+	if !ok {
+		log.Printf("WARN: the context value[%+v] of [%s] is not int type",
+			value, contextTodayIsFestivalKey)
+		workday = 0
+	}
+	return workday <= 0
 }
 
 func isRemindTime(t time.Time, begin, end string) bool {

@@ -16,10 +16,18 @@ import (
 	"github.com/zhao-kun/reminder-tgbot/telegram"
 )
 
+// wrapClientRepo wrap a func with config parameter
+func wrapClientRepo(c telegram.Client, r repo.Repo,
+	f func(telegram.Client, repo.Repo, rest.ResponseWriter, *rest.Request)) func(rest.ResponseWriter, *rest.Request) {
+	return func(w rest.ResponseWriter, req *rest.Request) {
+		f(c, r, w, req)
+	}
+
+}
 func startServer(c telegram.Client, r repo.Repo) (<-chan error, error) {
 	router, err := rest.MakeRouter(
-		rest.Post(r.Cfg().WebhookEndpoint, server.ClientRepoWrap(c, r, server.TelegramServerHandle)),
-		rest.Put(r.Cfg().WebhookEndpoint, server.ClientRepoWrap(c, r, server.TelegramServerHandle)),
+		rest.Post(r.Cfg().WebhookEndpoint, wrapClientRepo(c, r, server.TelegramServerHandle)),
+		rest.Put(r.Cfg().WebhookEndpoint, wrapClientRepo(c, r, server.TelegramServerHandle)),
 	)
 
 	if err != nil {
