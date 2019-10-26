@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/zhao-kun/tgbot/client"
-	"github.com/zhao-kun/tgbot/model"
-	"github.com/zhao-kun/tgbot/repo"
-	"github.com/zhao-kun/tgbot/task"
-	"github.com/zhao-kun/tgbot/telegram"
-	"github.com/zhao-kun/tgbot/util"
+	"github.com/zhao-kun/reminder-tgbot/client"
+	"github.com/zhao-kun/reminder-tgbot/model"
+	"github.com/zhao-kun/reminder-tgbot/repo"
+	"github.com/zhao-kun/reminder-tgbot/task"
+	"github.com/zhao-kun/reminder-tgbot/telegram"
+	"github.com/zhao-kun/reminder-tgbot/util"
 )
 
 const (

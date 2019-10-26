@@ -1,4 +1,4 @@
-module github.com/zhao-kun/tgbot
+module github.com/zhao-kun/reminder-tgbot
 
 go 1.13
 

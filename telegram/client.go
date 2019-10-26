@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	httpclient "github.com/zhao-kun/tgbot/client"
-	"github.com/zhao-kun/tgbot/model"
+	httpclient "github.com/zhao-kun/reminder-tgbot/client"
+	"github.com/zhao-kun/reminder-tgbot/model"
 )
 
 type (

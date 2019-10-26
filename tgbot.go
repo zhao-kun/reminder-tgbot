@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/zhao-kun/tgbot/model"
-	"github.com/zhao-kun/tgbot/repo"
-	"github.com/zhao-kun/tgbot/server"
-	"github.com/zhao-kun/tgbot/telegram"
+	"github.com/zhao-kun/reminder-tgbot/model"
+	"github.com/zhao-kun/reminder-tgbot/repo"
+	"github.com/zhao-kun/reminder-tgbot/server"
+	"github.com/zhao-kun/reminder-tgbot/telegram"
 )
 
 func startServer(c telegram.Client, r repo.Repo) (<-chan error, error) {

@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zhao-kun/tgbot/repo"
-	"github.com/zhao-kun/tgbot/telegram"
+	"github.com/zhao-kun/reminder-tgbot/repo"
+	"github.com/zhao-kun/reminder-tgbot/telegram"
 )
 
 const (

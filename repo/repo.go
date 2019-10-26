@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/zhao-kun/tgbot/model"
-	"github.com/zhao-kun/tgbot/util"
+	"github.com/zhao-kun/reminder-tgbot/model"
+	"github.com/zhao-kun/reminder-tgbot/util"
 )
 
 var (
