@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
@@ -131,7 +132,8 @@ func dispatch(cfg model.Config, messages []model.TgMessage,
 		if message.Message.MessageID > 0 &&
 			isCommand(message.Message.Entities) &&
 			message.Message.From.IsBot == false {
-			switch message.Message.Text {
+			commands := strings.Split(message.Message.Text, "@")
+			switch commands[0] {
 			case checkInCommand:
 				pcf = getChatFuncs(checkInCommand, chatFuncs)
 				currentMsg = message.Message

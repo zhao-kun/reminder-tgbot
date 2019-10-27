@@ -65,6 +65,7 @@ type (
 	}
 	// Config represent global configuration
 	Config struct {
+		Name            string   `json:"name"`
 		TgbotToken      string   `json:"tgbot_token"`
 		ListenAddr      string   `json:"listen_addr"`
 		CheckUesrs      []string `json:"check_users"`
