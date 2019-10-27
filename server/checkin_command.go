@@ -9,7 +9,7 @@ import (
 	"github.com/zhao-kun/reminder-tgbot/repo"
 )
 
-func newReplyMessage(chatID, replyID int, text string) model.ReplyMessage {
+func newReplyMessage(chatID int64, replyID int, text string) model.ReplyMessage {
 	return model.ReplyMessage{
 		BotMessage: model.BotMessage{
 			ChatID: chatID,

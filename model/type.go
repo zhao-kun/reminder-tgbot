@@ -10,7 +10,7 @@ type (
 		LanguageCode string `json:"language_code"`
 	}
 	Chat struct {
-		ID        int    `json:"id"`
+		ID        int64  `json:"id"`
 		FirstName string `json:"first_name"`
 		LastName  string `json:"last_name"`
 		Username  string `json:"username"`
@@ -42,7 +42,7 @@ type (
 	// BotMessage represent message send by bot
 	BotMessage struct {
 		//
-		ChatID int    `json:"chat_id"`
+		ChatID int64  `json:"chat_id"`
 		Text   string `json:"text"`
 	}
 
@@ -69,7 +69,7 @@ type (
 		ListenAddr      string   `json:"listen_addr"`
 		CheckUesrs      []string `json:"check_users"`
 		WebhookEndpoint string   `json:"webhook_endpoint"`
-		Channels        []int    `json:"channels"`
+		Channels        []int64  `json:"channels"`
 		Remind          Remind   `json:"remind"`
 		//
 		CNCalendarServiceEndpoint string `json:"cn_calendar_service_endpoint"`

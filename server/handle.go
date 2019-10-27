@@ -104,7 +104,7 @@ func getChatFuncs(funcName string, funcs map[string]processCommandFunc) processC
 	return funcs[funcName]
 }
 
-func isSessionAllowToCheckIn(cfg model.Config, currentSession int) bool {
+func isSessionAllowToCheckIn(cfg model.Config, currentSession int64) bool {
 	for _, c := range cfg.Channels {
 		if c == currentSession {
 			return true
