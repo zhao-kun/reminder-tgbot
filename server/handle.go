@@ -115,7 +115,7 @@ func isSessionAllowToCheckIn(cfg model.Config, currentSession int) bool {
 
 func isChinaTimeZoneNewDay() bool {
 	chinaNow := util.GetChinaTimeNow()
-	if timeInRange(chinaNow, "00:00:00+800", "00:11:00+800") {
+	if timeInRange(chinaNow, "00:00:00+08:00", "00:11:00+08:00") {
 		return true
 	}
 	return false
