@@ -44,14 +44,14 @@ func processNone(repo repo.Repo, msg model.Message) model.ReplyMessage {
 }
 
 func processCheckIn(r repo.Repo, msg model.Message) model.ReplyMessage {
-	resp := newReplyMessage(msg.Chat.ID, msg.MessageID, fmt.Sprintf("OK! you are checkin @%s", msg.From.Username))
+	resp := newReplyMessage(msg.Chat.ID, msg.MessageID, fmt.Sprintf("OK! you are checked in @%s", msg.From.Username))
 	err := r.CheckIn(msg)
 	if err != nil {
 		log.Printf("%s checkin at %d failed:%s", msg.Chat.Username, msg.Date, err)
 		if err == repo.ErrAlreadyCheckedIn {
-			resp.Text = fmt.Sprintf("Are you kidding me, you've already checked in.")
+			resp.Text = fmt.Sprintf("Yes, yes, you've already checked in.")
 		} else {
-			resp.Text = fmt.Sprintf("Sorry, checked in failed, please contact tgbot author.")
+			resp.Text = fmt.Sprintf("Sorry, check in failed, please contact the `reminder-tgbot` author.")
 		}
 	}
 	return resp

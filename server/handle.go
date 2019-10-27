@@ -123,7 +123,7 @@ func isChinaTimeZoneNewDay() bool {
 
 func dispatch(cfg model.Config, messages []model.TgMessage,
 	chatFuncs map[string]processCommandFunc,
-	funcs ...validateFunc) (commandFunc, error) {
+	validFuncs ...validateFunc) (commandFunc, error) {
 	var pcf processCommandFunc = nil
 	var currentMsg model.Message
 
@@ -145,7 +145,7 @@ func dispatch(cfg model.Config, messages []model.TgMessage,
 			if pcf == nil {
 				return nil
 			}
-			for _, validFunc := range funcs {
+			for _, validFunc := range validFuncs {
 				valid, tips := validFunc(cfg, currentMsg)
 				if !valid {
 					reply := newReplyMessage(currentMsg.Chat.ID,
