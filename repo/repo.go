@@ -19,7 +19,9 @@ var (
 // Repo is a interface which operation check history
 type Repo interface {
 	model.Cfg
+	// CheckIn record a information of checking in according to message
 	CheckIn(model.Message) error
+	// IsUserNeedCheckIn jude whether the `user` need to check in today
 	IsUserNeedCheckIn(user string) bool
 }
 
@@ -33,6 +35,12 @@ func (r repo) Cfg() model.Config {
 	return r.cfg
 }
 
+// CheckIn executed check in by some one
+func (r repo) CheckIn(message model.Message) error {
+	checkTime := util.GetChinaTimeFromUnix(int64(message.Date))
+	return checkIn(checkTime, message.Chat.Username)
+}
+
 func (r repo) IsUserNeedCheckIn(user string) bool {
 	now := util.GetChinaTimeNow()
 	file, _ := checkInFilePath(now, user)
@@ -42,27 +50,22 @@ func (r repo) IsUserNeedCheckIn(user string) bool {
 	return true
 }
 
-// CheckIn executed check in by some one
-func (r repo) CheckIn(message model.Message) error {
-	checkTime := util.GetChinaTimeFromUnix(int64(message.Date))
-	return checkIn(checkTime, message.Chat.Username)
-}
-
 func checkIn(checkTime time.Time, user string) error {
 	path, file := checkInFilePath(checkTime, user)
 	log.Printf("file is %s", file)
-	if !util.IsFileExist(file) {
-		os.MkdirAll(path, 0755)
-		h, err := os.OpenFile(file, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0600)
-		if err != nil {
-			return err
-		}
-		defer h.Close()
-		_, err = h.WriteString(fmt.Sprintf("%s checkin at %+v", user, checkTime))
-		return err
+	if util.IsFileExist(file) {
+		return ErrAlreadyCheckedIn
 	}
 
-	return ErrAlreadyCheckedIn
+	os.MkdirAll(path, 0755)
+	h, err := os.OpenFile(file, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0600)
+	if err != nil {
+		return err
+	}
+	defer h.Close()
+	_, err = h.WriteString(fmt.Sprintf("%s checkin at %+v", user, checkTime))
+	return err
+
 }
 
 // New return a Repo interface

@@ -1,6 +1,7 @@
 package model
 
 type (
+	// From is a struct hold information of message where came from
 	From struct {
 		ID           int    `json:"id"`
 		IsBot        bool   `json:"is_bot"`
@@ -9,6 +10,7 @@ type (
 		Username     string `json:"username"`
 		LanguageCode string `json:"language_code"`
 	}
+	//Chat is a struct hold information of message who send to
 	Chat struct {
 		ID        int64  `json:"id"`
 		FirstName string `json:"first_name"`
@@ -17,6 +19,7 @@ type (
 		Type      string `json:"type"`
 	}
 
+	// Entity is a struct
 	Entity struct {
 		Offset int    `json:"offset"`
 		Length int    `json:"length"`

@@ -24,7 +24,7 @@ type (
 		callback CallbackFunc
 		// interval
 		interval time.Duration
-		// name unique identy a task
+		// name unique identify a task
 		name string
 
 		stop chan struct{}

@@ -2,6 +2,7 @@ package model
 
 // Cfg interface return a global configuration
 type Cfg interface {
+	//Cfg return config
 	Cfg() Config
 }
 
