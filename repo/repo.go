@@ -38,7 +38,7 @@ func (r repo) Cfg() model.Config {
 // CheckIn executed check in by some one
 func (r repo) CheckIn(message model.Message) error {
 	checkTime := util.GetChinaTimeFromUnix(int64(message.Date))
-	return checkIn(checkTime, message.Chat.Username)
+	return checkIn(checkTime, message.From.Username)
 }
 
 func (r repo) IsUserNeedCheckIn(user string) bool {

@@ -168,7 +168,7 @@ func TelegramServerHandle(c telegram.Client, r repo.Repo, message model.TgMessag
 		return
 	}
 
-	if respFunc != nil {
+	if respFunc == nil {
 		return
 	}
 
