@@ -5,9 +5,6 @@ import (
 	"log"
 	"sync"
 	"time"
-
-	"github.com/zhao-kun/reminder-tgbot/repo"
-	"github.com/zhao-kun/reminder-tgbot/telegram"
 )
 
 const (
@@ -54,10 +51,10 @@ func (r *taskRegistry) AddTask(tas Task) error {
 	r.Lock()
 	defer r.Unlock()
 
-	if _, ok := r.tasks[tas.GetName()]; ok {
+	if _, ok := r.tasks[tas.Name()]; ok {
 		return fmt.Errorf("Task %s already register in registry", t.name)
 	}
-	r.tasks[tas.GetName()] = t
+	r.tasks[tas.Name()] = t
 	return nil
 }
 
@@ -90,7 +87,7 @@ func (r *taskRegistry) runTask(t *task) {
 	}()
 }
 
-func (t *task) GetName() string {
+func (t *task) Name() string {
 	return t.name
 }
 
@@ -112,15 +109,6 @@ func New(name string, duration string, taskFunc CallbackFunc) (Task, error) {
 func NewTaskRegistry() Registry {
 	return &taskRegistry{
 		tasks: make(map[string]*task, 10),
-	}
-}
-
-// WrapWithRepoAndTelegramClient wrap function with model.Config and
-// telegram.Client function to a TaskCallbackFunc
-func WrapWithRepoAndTelegramClient(tgClient telegram.Client, r repo.Repo,
-	c Context, f func(telegram.Client, repo.Repo, Context) bool) CallbackFunc {
-	return func() bool {
-		return f(tgClient, r, c)
 	}
 }
 

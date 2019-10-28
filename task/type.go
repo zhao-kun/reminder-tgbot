@@ -14,6 +14,6 @@ type (
 	}
 	// Task represent a task
 	Task interface {
-		GetName() string
+		Name() string
 	}
 )

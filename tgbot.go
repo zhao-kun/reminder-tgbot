@@ -16,20 +16,47 @@ import (
 	"github.com/zhao-kun/reminder-tgbot/telegram"
 )
 
+type (
+	response struct {
+		Ok bool `json:"ok"`
+	}
+)
+
 // wrapClientRepo wrap a func with config parameter
 func wrapClientRepo(c telegram.Client, r repo.Repo,
-	f func(telegram.Client, repo.Repo, rest.ResponseWriter, *rest.Request)) func(rest.ResponseWriter, *rest.Request) {
+	f func(telegram.Client, repo.Repo, model.TgMessage)) rest.HandlerFunc {
 	return func(w rest.ResponseWriter, req *rest.Request) {
-		f(c, r, w, req)
+		ok := func() {
+			w.WriteJson(response{true})
+			w.WriteHeader(http.StatusOK)
+		}
+
+		body, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			rest.Error(w, "read request body error", http.StatusBadGateway)
+			return
+		}
+
+		log.Printf("Request %s is comming body is:\n%s\n", req.URL.Path[1:], body)
+		var message model.TgMessage
+		err = json.Unmarshal(body, &message)
+		if err != nil {
+			log.Printf("Can't unmarshal body [%s] to message", body)
+			ok()
+			return
+		}
+		f(c, r, message)
+		ok()
 	}
 
 }
 func startServer(c telegram.Client, r repo.Repo) (<-chan error, error) {
-	router, err := rest.MakeRouter(
-		rest.Post(r.Cfg().WebhookEndpoint, wrapClientRepo(c, r, server.TelegramServerHandle)),
-		rest.Put(r.Cfg().WebhookEndpoint, wrapClientRepo(c, r, server.TelegramServerHandle)),
-	)
 
+	checkInHandle := wrapClientRepo(c, r, server.TelegramServerHandle)
+	router, err := rest.MakeRouter(
+		rest.Post(r.Cfg().WebhookEndpoint, checkInHandle),
+		rest.Put(r.Cfg().WebhookEndpoint, checkInHandle),
+	)
 	if err != nil {
 		log.Fatalf("Make router error :%s", err)
 		return nil, err
@@ -53,7 +80,6 @@ func startServer(c telegram.Client, r repo.Repo) (<-chan error, error) {
 			done <- err
 		}
 	}()
-
 	return done, nil
 }
 

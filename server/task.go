@@ -13,6 +13,15 @@ import (
 	"github.com/zhao-kun/reminder-tgbot/telegram"
 )
 
+// wrapWithRepoAndTelegramClient wrap function with model.Config and
+// telegram.Client function to a TaskCallbackFunc
+func wrapWithRepoAndTelegramClient(tgClient telegram.Client, r repo.Repo,
+	c task.Context, f func(telegram.Client, repo.Repo, task.Context) bool) task.CallbackFunc {
+	return func() bool {
+		return f(tgClient, r, c)
+	}
+}
+
 func getChineseFestivalCalendar(c telegram.Client, r repo.Repo, context task.Context) bool {
 	if !isChinaTimeZoneNewDay() {
 		return true
@@ -72,13 +81,13 @@ func StartAllBotTask(c telegram.Client, r repo.Repo) error {
 	context["Calendar"] = map[string]int{}
 
 	calendarTask, err := task.New("get_chinese_festival_task", "2m",
-		task.WrapWithRepoAndTelegramClient(c, r, context, getChineseFestivalCalendar))
+		wrapWithRepoAndTelegramClient(c, r, context, getChineseFestivalCalendar))
 	if err != nil {
 		return fmt.Errorf("create calendarTask error: %s", err)
 	}
 
 	remindTask, err := task.New("remind_task", r.Cfg().Remind.RemindInterval,
-		task.WrapWithRepoAndTelegramClient(c, r, context, reminder))
+		wrapWithRepoAndTelegramClient(c, r, context, reminder))
 	if err != nil {
 		return fmt.Errorf("create remindTask error: %s", err)
 	}
@@ -87,11 +96,11 @@ func StartAllBotTask(c telegram.Client, r repo.Repo) error {
 
 	err = registry.AddTask(calendarTask)
 	if err != nil {
-		return fmt.Errorf("Add %s task error: %s", calendarTask.GetName(), err)
+		return fmt.Errorf("Add %s task error: %s", calendarTask.Name(), err)
 	}
 	err = registry.AddTask(remindTask)
 	if err != nil {
-		return fmt.Errorf("Add %s task error: %s", remindTask.GetName(), err)
+		return fmt.Errorf("Add %s task error: %s", remindTask.Name(), err)
 	}
 	registry.StartAllTask()
 	return nil

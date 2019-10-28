@@ -1,15 +1,11 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"strings"
 	"time"
 
-	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/zhao-kun/reminder-tgbot/model"
 	"github.com/zhao-kun/reminder-tgbot/repo"
 	"github.com/zhao-kun/reminder-tgbot/task"
@@ -30,15 +26,11 @@ type (
 		Code int `json:"code"`
 	}
 
-	response struct {
-		Ok bool `json:"ok"`
-	}
-
 	//processCommandFunc is func which process dedicated command sent by tg
 	processCommandFunc func(repo.Repo, model.Message) model.ReplyMessage
 
 	// commandFunc wrap ProcesschatFunc
-	commandFunc func(telegram.Client, repo.Repo, rest.ResponseWriter) error
+	commandFunc func(telegram.Client, repo.Repo) error
 
 	validateFunc func(model.Config, model.Message) (bool, string)
 )
@@ -143,7 +135,7 @@ func dispatch(cfg model.Config, messages []model.TgMessage,
 	}
 
 	if pcf != nil {
-		return func(c telegram.Client, r repo.Repo, w rest.ResponseWriter) error {
+		return func(c telegram.Client, r repo.Repo) error {
 			if pcf == nil {
 				return nil
 			}
@@ -163,51 +155,26 @@ func dispatch(cfg model.Config, messages []model.TgMessage,
 }
 
 // TelegramServerHandle served `/checkin` command sent by user from tgchannel
-func TelegramServerHandle(c telegram.Client, r repo.Repo, w rest.ResponseWriter, req *rest.Request) {
-
-	ok := func() {
-		w.WriteJson(response{true})
-		w.WriteHeader(http.StatusOK)
-	}
-
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		rest.Error(w, "read request body error", http.StatusBadGateway)
-		return
-	}
-
-	log.Printf("Request %s is comming body is:\n%s\n", req.URL.Path[1:], body)
-	var messages model.TgMessage
-	err = json.Unmarshal(body, &messages)
-	if err != nil {
-		log.Printf("Can't unmarshal body [%s] to message", body)
-		ok()
-		return
-	}
+func TelegramServerHandle(c telegram.Client, r repo.Repo, message model.TgMessage) {
 
 	respFunc, err := dispatch(r.Cfg(),
-		[]model.TgMessage{messages},
+		[]model.TgMessage{message},
 		chatFuncs,
 		validateSession,
 		validateCheckInUser,
 		validateCheckInTime)
 	if err != nil {
 		log.Printf("processChat error %s", err)
-		ok()
 		return
 	}
 
-	if respFunc == nil {
-		ok()
+	if respFunc != nil {
 		return
 	}
 
-	err = respFunc(c, r, w)
-	if err != nil {
+	if err := respFunc(c, r); err != nil {
 		log.Printf("respFunc run error %s", err)
-		ok()
 		return
 	}
-
 	return
 }
