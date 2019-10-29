@@ -1,6 +1,6 @@
 ## Telegram reminder bot
 
-A telegram bot which is dedicated to reminding to group member to check in, and recoding time and person for each checking in
+A telegram bot which is dedicated to reminding a member of group to check in, and recoding information for each checking in
 
 
 ## Build
