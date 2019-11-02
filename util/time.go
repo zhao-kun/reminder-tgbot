@@ -32,5 +32,5 @@ func GetChinaTimeNow() time.Time {
 // GetDate return "yyyymmdd" string to represent date
 func GetDate(date time.Time) string {
 	y, m, d := date.Date()
-	return fmt.Sprintf("%d%d%d", y, m, d)
+	return fmt.Sprintf("%04d%02d%02d", y, m, d)
 }
