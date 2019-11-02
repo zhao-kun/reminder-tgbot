@@ -27,26 +27,40 @@ func getChineseFestivalCalendar(c telegram.Client, r repo.Repo, context task.Con
 	if !isChinaTimeZoneNewDay() {
 		return true
 	}
-
 	context[contextTodayIsFestivalKey] = 0
-	config := r.Cfg()
+	context[contextTodayIsFestivalKey] = todayIsFestival(r.Cfg().CNCalendarServiceEndpoint)
+	log.Printf("today is [%d] day", context[contextTodayIsFestivalKey])
+	return true
+}
+
+func todayIsFestival(calendarServiceEndpoint string) int {
 	today := util.GetDate(util.GetChinaTimeNow())
-	url := fmt.Sprintf("%s?date=%s", config.CNCalendarServiceEndpoint, today)
+	url := fmt.Sprintf("%s?date=%s", calendarServiceEndpoint, today)
 	resp, err := client.HandleRequest("GET", url, nil)
 	if err != nil {
 		log.Printf("request %s failed: %s", url, err)
-		return true
+		return 0
 	}
 
 	var cal calendarResp
 	err = json.Unmarshal(resp, &cal)
 	if err != nil {
 		log.Printf("unmarsh resp %+v failed: %s", resp, err)
+		return 0
 	}
 
-	context["today_is_fesetival"] = cal.Data
-	log.Printf("today is [%d] day", cal.Data)
-	return true
+	return cal.Data
+}
+
+func isWorkDay(context task.Context) bool {
+	value := context[contextTodayIsFestivalKey]
+	workday, ok := value.(int)
+	if !ok {
+		log.Printf("WARN: the context value[%+v] of [%s] is not int type",
+			value, contextTodayIsFestivalKey)
+		workday = 0
+	}
+	return workday <= 0
 }
 
 func reminder(c telegram.Client, r repo.Repo, context task.Context) bool {
@@ -79,7 +93,9 @@ func reminder(c telegram.Client, r repo.Repo, context task.Context) bool {
 // StartAllBotTask start task which need be run by the bot
 func StartAllBotTask(c telegram.Client, r repo.Repo) error {
 	context := task.NewContext()
-	context["Calendar"] = map[string]int{}
+
+	context[contextTodayIsFestivalKey] = todayIsFestival(r.Cfg().CNCalendarServiceEndpoint)
+	log.Printf("Today is %d", context[contextTodayIsFestivalKey])
 
 	calendarTask, err := task.New("get_chinese_festival_task", "2m",
 		wrapWithRepoAndTelegramClient(c, r, context, getChineseFestivalCalendar))

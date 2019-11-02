@@ -8,7 +8,6 @@ import (
 
 	"github.com/zhao-kun/reminder-tgbot/model"
 	"github.com/zhao-kun/reminder-tgbot/repo"
-	"github.com/zhao-kun/reminder-tgbot/task"
 	"github.com/zhao-kun/reminder-tgbot/telegram"
 	"github.com/zhao-kun/reminder-tgbot/util"
 )
@@ -41,17 +40,6 @@ var (
 		noneOpsCommand: processNone,
 	}
 )
-
-func isWorkDay(context task.Context) bool {
-	value := context[contextTodayIsFestivalKey]
-	workday, ok := value.(int)
-	if !ok {
-		log.Printf("WARN: the context value[%+v] of [%s] is not int type",
-			value, contextTodayIsFestivalKey)
-		workday = 0
-	}
-	return workday <= 0
-}
 
 func isRemindTime(t time.Time, begin, end string) bool {
 	return timeInRange(t, begin, end)
