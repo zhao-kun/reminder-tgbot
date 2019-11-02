@@ -11,6 +11,7 @@ import (
 	"github.com/zhao-kun/reminder-tgbot/repo"
 	"github.com/zhao-kun/reminder-tgbot/task"
 	"github.com/zhao-kun/reminder-tgbot/telegram"
+	"github.com/zhao-kun/reminder-tgbot/util"
 )
 
 // wrapWithRepoAndTelegramClient wrap function with model.Config and
@@ -29,7 +30,7 @@ func getChineseFestivalCalendar(c telegram.Client, r repo.Repo, context task.Con
 
 	context[contextTodayIsFestivalKey] = 0
 	config := r.Cfg()
-	today := ""
+	today := util.GetDate(util.GetChinaTimeNow())
 	url := fmt.Sprintf("%s?date=%s", config.CNCalendarServiceEndpoint, today)
 	resp, err := client.HandleRequest("GET", url, nil)
 	if err != nil {

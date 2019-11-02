@@ -1,6 +1,9 @@
 package util
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 var (
 	chinaTime *time.Location
@@ -24,4 +27,10 @@ func GetChinaTimeFromUnix(t int64) time.Time {
 func GetChinaTimeNow() time.Time {
 	t := time.Now()
 	return t.In(chinaTime)
+}
+
+// GetDate return "yyyymmdd" string to represent date
+func GetDate(date time.Time) string {
+	y, m, d := date.Date()
+	return fmt.Sprintf("%d%d%d", y, m, d)
 }
